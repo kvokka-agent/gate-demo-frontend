@@ -9,10 +9,11 @@ A small static frontend that asks the greeting API for a personalized hello.
 
 ## Start the backend
 
-In a terminal, from the backend rig directory, run:
+From the frontend repository directory, navigate to the sibling backend
+repository directory and start the server:
 
 ```sh
-cd /home/ubuntu/proj/work/aae/demos/3-review-gate/gate-demo-backend
+cd ../gate-demo-backend
 python3 server.py
 ```
 
@@ -20,10 +21,9 @@ The API listens at `http://localhost:8000`. Keep this terminal open.
 
 ## Start the frontend
 
-In another terminal, from this rig directory, run:
+In another terminal, from the frontend repository directory, run:
 
 ```sh
-cd /home/ubuntu/proj/work/aae/demos/3-review-gate/gate-demo-frontend
 python3 -m http.server 3000
 ```
 
