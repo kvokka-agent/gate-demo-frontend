@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Greeting</title>
+    <style>
+      :root { color-scheme: light; font: 16px/1.5 system-ui, sans-serif; color: #18212f; background: #f4f6fa; }
+      body { box-sizing: border-box; display: grid; min-height: 100vh; margin: 0; padding: 1.5rem; place-items: center; }
+      main { width: min(100%, 28rem); padding: 2rem; border: 1px solid #dce2ec; border-radius: 1rem; background: white; box-shadow: 0 1rem 3rem #24355212; }
+      h1 { margin-top: 0; }
+      label { display: block; margin-bottom: .4rem; font-weight: 600; }
+      input, button { box-sizing: border-box; width: 100%; min-height: 2.75rem; padding: .6rem .75rem; border-radius: .5rem; font: inherit; }
+      input { border: 1px solid #aeb9c9; }
+      button { margin-top: .8rem; border: 0; background: #2457d6; color: white; font-weight: 600; cursor: pointer; }
+      button:disabled { cursor: wait; opacity: .7; }
+      #result { margin: 1.25rem 0 0; overflow-wrap: anywhere; }
+      #result:empty { display: none; }
+      #result.error { color: #a12626; }
+      input:focus-visible, button:focus-visible { outline: 3px solid #91b3ff; outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Get a greeting</h1>
+      <form id="greeting-form">
+        <label for="name">Your name</label>
+        <input id="name" name="name" autocomplete="name" required>
+        <button id="submit" type="submit">Get greeting</button>
+      </form>
+      <p id="result" aria-live="polite"></p>
+    </main>
+    <script>
+      const form = document.querySelector('#greeting-form');
+      const nameInput = document.querySelector('#name');
+      const submitButton = document.querySelector('#submit');
+      const result = document.querySelector('#result');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        result.textContent = '';
+        result.classList.remove('error');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Getting greeting…';
+
+        try {
+          const response = await fetch('http://127.0.0.1:8001/greet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: nameInput.value }),
+          });
+          if (!response.ok) throw new Error(`The server responded with ${response.status}.`);
+          const data = await response.json();
+          if (typeof data.greeting !== 'string') throw new Error('The server returned an invalid greeting.');
+          result.textContent = data.greeting;
+        } catch (error) {
+          result.classList.add('error');
+          result.textContent = `Could not get a greeting. ${error.message || 'Check that the backend is running.'}`;
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Get greeting';
+        }
+      });
+    </script>
+  </body>
+</html>
